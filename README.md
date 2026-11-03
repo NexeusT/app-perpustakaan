@@ -71,6 +71,7 @@ Aplikasi web Sistem Perpustakaan Digital Kampus yang dibangun menggunakan **Lara
 - **[P-1] Setup & Inisialisasi**: Selesai menginstal Laravel 12, konfigurasi database `db_perpustakaan`, pembagian branch `main` & `dev`, serta dokumentasi dasar.
 - **[P-2] Routing & Request Lifecycle**: Selesai membuat resource controller (`BookController`, `CategoryController`, `MemberController`, `LoanController`), pendaftaran resource route beserta route kustom `loans.kembalikan`, serta route grouping `/admin`.
 - **[P-3] Controller, Request & Validation**: Selesai implementasi Form Request (`StoreBookRequest`, `StoreCategoryRequest`, `StoreMemberRequest`), logika controller data dummy, validasi input dan pesan Bahasa Indonesia, serta antarmuka Blade untuk Books, Categories, dan Members.
+- **[P-4] Blade Templating & Component**: Selesai pembuatan master layout `layouts/app.blade.php`, partial navbar dinamis dengan active state, partial alert reusable, serta refactor seluruh view index dan form create ke master layout.
 
 ### Bukti Uji Coba Server (http://127.0.0.1:8000)
 
