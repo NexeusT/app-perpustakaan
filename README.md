@@ -69,6 +69,7 @@ Aplikasi web Sistem Perpustakaan Digital Kampus yang dibangun menggunakan **Lara
 ## Status Modul Praktikum
 
 - **[P-1] Setup & Inisialisasi**: Selesai menginstal Laravel 12, konfigurasi database `db_perpustakaan`, pembagian branch `main` & `dev`, serta dokumentasi dasar.
+- **[P-2] Routing & Request Lifecycle**: Selesai membuat resource controller (`BookController`, `CategoryController`, `MemberController`, `LoanController`), pendaftaran resource route beserta route kustom `loans.kembalikan`, serta route grouping `/admin`.
 
 ### Bukti Uji Coba Server (http://127.0.0.1:8000)
 
