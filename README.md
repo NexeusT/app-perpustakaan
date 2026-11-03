@@ -1,81 +1,126 @@
-# App Perpustakaan (Sistem Perpustakaan Digital Kampus)
+# app-perpustakaan
 
-Aplikasi web Sistem Perpustakaan Digital Kampus yang dibangun menggunakan **Laravel 12**. Aplikasi ini dirancang untuk memudahkan petugas dan admin perpustakaan dalam mengelola data buku, data anggota, serta transaksi peminjaman dan pengembalian buku secara digital dan terstruktur.
+Aplikasi manajemen perpustakaan digital kampus dibangun dengan **Laravel 12**, mencakup CRUD buku, anggota, kategori, peminjaman, REST API, serta dashboard statistik yang mengonsumsi API internal.
+
+## Teknologi
+
+- **Backend:** Laravel 12 (PHP 8.2+)
+- **Database:** SQLite (default) / MySQL
+- **Auth:** Laravel built-in session auth
+- **API:** Laravel API Resources + HTTP Client
+
+## Cara Menjalankan
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/NexeusT/app-perpustakaan.git
+cd app-perpustakaan
+```
+
+### 2. Install Dependency
+
+```bash
+composer install
+```
+
+### 3. Setup Environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Edit `.env` sesuai kebutuhan lokal. Variabel penting:
+
+```env
+# URL aplikasi utama
+APP_URL=http://localhost:8000
+
+# URL instance server kedua khusus panggilan API internal
+# (DashboardController dan LoanController@report menggunakan ini)
+# Wajib diisi dengan port berbeda dari APP_URL
+INTERNAL_API_URL=http://127.0.0.1:8011
+
+# Locale Faker untuk data dummy bergaya Indonesia
+APP_FAKER_LOCALE=id_ID
+
+# Konfigurasi database (SQLite default sudah tersedia)
+DB_CONNECTION=sqlite
+```
+
+### 4. Migrate & Seed Database
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Perintah ini akan:
+- Membuat ulang semua tabel dari nol
+- Menjalankan 5 seeder: UserSeeder, CategorySeeder, BookSeeder, MemberSeeder, LoanSeeder
+- Menghasilkan data dummy: 3 user, 5 kategori, 20 buku, 15 anggota, 10 peminjaman
+
+### 5. Jalankan Dua Server
+
+> **Penting:** Dashboard (`/`) dan Laporan Peminjaman (`/loans/report`) mengonsumsi API internal via Laravel HTTP Client. Karena `php artisan serve` hanya memproses satu request per waktu, diperlukan **dua instance server di port berbeda** agar tidak terjadi deadlock.
+
+Buka dua terminal:
+
+```bash
+# Terminal 1 — Server utama untuk browser
+php artisan serve --port=8000
+
+# Terminal 2 — Server API internal (dipanggil dari dalam aplikasi)
+php artisan serve --port=8011
+```
+
+Kemudian buka browser di: `http://127.0.0.1:8000`
 
 ---
 
-## Pemahaman Arsitektur MVC (Model - View - Controller)
+## Kredensial Default
 
-- **Model**: Bertanggung jawab atas pengelolaan data, aturan bisnis, serta komunikasi langsung dengan tabel database (seperti representasi tabel buku, anggota, dan peminjaman) menggunakan Eloquent ORM.
-- **View**: Bertanggung jawab murni pada tampilan antarmuka pengguna (HTML/UI) menggunakan template engine Blade, bertugas menampilkan data yang sudah disiapkan tanpa memuat query atau logika bisnis yang rumit.
-- **Controller**: Bertindak sebagai penghubung dan pengendali alur utama yang menerima request dari pengguna, memanggil Model untuk mengambil atau memperbarui data, lalu mengirimkan data tersebut ke View untuk ditampilkan kembali ke browser.
-
----
-
-## Prasyarat Lingkungan (Prerequisites)
-
-- **PHP**: >= 8.2 (dengan ekstensi `pdo_mysql`, `mbstring`, `intl`, `zip`, `fileinfo`)
-- **Composer**: Dependency Manager untuk PHP
-- **Database**: MySQL / MariaDB (misalnya via XAMPP)
-- **VCS**: Git
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@pens.ac.id` | `password` |
+| Petugas | `petugas1@pens.ac.id` | `password` |
+| Petugas | `petugas2@pens.ac.id` | `password` |
 
 ---
 
-## Cara Menjalankan Project Secara Lokal
+## Fitur
 
-1. **Clone repository:**
-   ```bash
-   git clone https://github.com/NexeusT/app-perpustakaan.git
-   cd app-perpustakaan
-   ```
-
-2. **Beralih ke branch pengembangan (`dev`):**
-   ```bash
-   git checkout dev
-   ```
-
-3. **Install dependensi Composer:**
-   ```bash
-   composer install
-   ```
-
-4. **Konfigurasi Environment (.env):**
-   Salin file konfigurasi jika belum ada dan generate Application Key:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-5. **Konfigurasi Database MySQL:**
-   Pastikan server MySQL (XAMPP) sudah aktif dan buat database bernama `db_perpustakaan`.
-   Sesuaikan konfigurasi pada file `.env`:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=db_perpustakaan
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-
-6. **Menjalankan Development Server:**
-   ```bash
-   php artisan serve
-   ```
-   Aplikasi dapat diakses melalui browser di alamat: `http://127.0.0.1:8000`.
+| Fitur | URL | Akses |
+|-------|-----|-------|
+| Dashboard statistik | `/` | Auth |
+| CRUD Buku | `/books` | Auth |
+| CRUD Anggota | `/members` | Auth |
+| CRUD Peminjaman | `/loans` | Auth |
+| Pengembalian buku | `/loans/{id}/kembalikan` | Auth |
+| Laporan peminjaman | `/loans/report` | Auth |
+| CRUD Kategori | `/categories` | Admin only |
+| REST API Buku | `GET /api/books` | Public |
+| REST API Anggota | `GET /api/members` | Public |
+| REST API Peminjaman | `GET /api/loans` | Public |
+| REST API Statistik | `GET /api/stats` | Public |
 
 ---
 
-## Status Modul Praktikum
+## Struktur Branch
 
-- **[P-1] Setup & Inisialisasi**: Selesai menginstal Laravel 12, konfigurasi database `db_perpustakaan`, pembagian branch `main` & `dev`, serta dokumentasi dasar.
-- **[P-2] Routing & Request Lifecycle**: Selesai membuat resource controller (`BookController`, `CategoryController`, `MemberController`, `LoanController`), pendaftaran resource route beserta route kustom `loans.kembalikan`, serta route grouping `/admin`.
-- **[P-3] Controller, Request & Validation**: Selesai implementasi Form Request (`StoreBookRequest`, `StoreCategoryRequest`, `StoreMemberRequest`), logika controller data dummy, validasi input dan pesan Bahasa Indonesia, serta antarmuka Blade untuk Books, Categories, dan Members.
-- **[P-4] Blade Templating & Master Layout**: Implementasi master layout Blade (`layouts.app`), partial navbar dan alert, serta refactor halaman index dan create resource ke master layout.
-- **[P-5] Migration & Eloquent ORM CRUD Data Nyata**: Pembuatan migration seluruh tabel, model Eloquent dengan mass assignment protection (`$fillable`), operasi CRUD penuh database nyata untuk `books`, `categories`, dan tugas mandiri `members` (lengkap dengan search & pagination).
-- **[P-6] Evaluasi Tengah Semester (UTS)**: Refactor seluruh view (`edit`, `show`) ke master layout, penyusunan laporan UTS lengkap beserta dokumentasi screenshot dan jawaban konsep mendalam (`LAPORAN_UTS.md` & `LAPORAN_UTS.pdf`), serta automated test seluruh fungsionalitas CRUD.
+- `main` — Branch stabil, siap demo/produksi
+- `dev` — Branch pengembangan aktif
 
-### Bukti Uji Coba Server (http://127.0.0.1:8000)
+---
 
-![Halaman Welcome Laravel 12](./welcome-laravel.png)
+## Riwayat Pertemuan
 
+| Pertemuan | Topik |
+|-----------|-------|
+| P-4 | Setup project & migration |
+| P-5 | CRUD lengkap buku & anggota |
+| P-6 | Refactor ke master layout & test otomatis |
+| P-7 | CRUD peminjaman & pengembalian |
+| P-8 | Autentikasi login/logout & middleware role |
+| P-9 | REST API (books, members, loans, stats) |
+| P-10 | Dashboard konsumsi API, Seeder & Factory, finalisasi |
