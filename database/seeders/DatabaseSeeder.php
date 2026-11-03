@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([UserSeeder::class]);
+
         $fiksi = Category::firstOrCreate(
             ['nama_kategori' => 'Fiksi'],
             ['deskripsi' => 'Buku karya sastra fiksi dan novel']
